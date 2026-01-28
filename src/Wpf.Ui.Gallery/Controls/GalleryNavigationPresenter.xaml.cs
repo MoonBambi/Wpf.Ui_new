@@ -3,6 +3,11 @@
 // Copyright (C) Leszek Pomianowski and WPF UI Contributors.
 // All Rights Reserved.
 
+using System;
+using System.Windows;
+using System.Windows.Controls;
+using Wpf.Ui.Gallery.Models;
+
 namespace Wpf.Ui.Gallery.Controls;
 
 public class GalleryNavigationPresenter : System.Windows.Controls.Control
@@ -22,6 +27,8 @@ public class GalleryNavigationPresenter : System.Windows.Controls.Control
         typeof(GalleryNavigationPresenter),
         new PropertyMetadata(null)
     );
+
+    public event EventHandler<NavigationCard>? PlayRequested;
 
     public object? ItemsSource
     {
@@ -57,5 +64,20 @@ public class GalleryNavigationPresenter : System.Windows.Controls.Control
             $"INFO | {nameof(GalleryNavigationPresenter)} navigated, ({pageType})",
             "Wpf.Ui.Gallery"
         );
+    }
+
+    private void OnPlayButtonClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button)
+        {
+            return;
+        }
+
+        if (button.DataContext is not NavigationCard navigationCard)
+        {
+            return;
+        }
+
+        PlayRequested?.Invoke(this, navigationCard);
     }
 }

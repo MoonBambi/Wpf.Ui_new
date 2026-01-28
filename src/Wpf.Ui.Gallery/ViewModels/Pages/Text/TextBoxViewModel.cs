@@ -54,9 +54,9 @@ public partial class TextBoxViewModel : ViewModel
             return;
         }
 
-        RadioButton? cmdRadio = root.FindName("CmdRadio") as RadioButton;
-        RadioButton? psRadio = root.FindName("PsRadio") as RadioButton;
-        RadioButton? bashRadio = root.FindName("BashRadio") as RadioButton;
+        RadioButton? cmdRadio = FindChildByName<RadioButton>(root, "CmdRadio");
+        RadioButton? psRadio = FindChildByName<RadioButton>(root, "PsRadio");
+        RadioButton? bashRadio = FindChildByName<RadioButton>(root, "BashRadio");
 
         string title = TitleText?.Trim() ?? string.Empty;
         string command = CommandText?.Trim() ?? string.Empty;
@@ -134,6 +134,33 @@ public partial class TextBoxViewModel : ViewModel
         }
 
         return current;
+    }
+
+    private static T? FindChildByName<T>(DependencyObject parent, string name)
+        where T : FrameworkElement
+    {
+        if (parent == null)
+        {
+            return null;
+        }
+
+        int count = VisualTreeHelper.GetChildrenCount(parent);
+        for (int i = 0; i < count; i++)
+        {
+            DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+            if (child is T frameworkElement && frameworkElement.Name == name)
+            {
+                return frameworkElement;
+            }
+
+            T? result = FindChildByName<T>(child, name);
+            if (result != null)
+            {
+                return result;
+            }
+        }
+
+        return null;
     }
 
     private static string GetStoragePath()

@@ -5,6 +5,7 @@
 
 using Wpf.Ui.Controls;
 using Wpf.Ui.Gallery.Effects;
+using Wpf.Ui.Gallery.Models;
 using Wpf.Ui.Gallery.ViewModels.Pages.Text;
 
 namespace Wpf.Ui.Gallery.Views.Pages.Text;
@@ -23,6 +24,18 @@ public partial class TextPage : INavigableView<TextViewModel>
         _navigationService = navigationService;
 
         InitializeComponent();
+        CommandsPresenter.SetValue(
+            Wpf.Ui.Gallery.Controls.GalleryNavigationPresenter.TemplateButtonCommandProperty,
+            new Wpf.Ui.Input.RelayCommand<NavigationCard?>(async navigationCard =>
+            {
+                if (navigationCard is null)
+                {
+                    return;
+                }
+
+                await ViewModel.RunCommandAsync(navigationCard);
+            })
+        );
         Loaded += HandleLoaded;
         Unloaded += HandleUnloaded;
     }
