@@ -7,6 +7,7 @@
     xmlns:local="clr-namespace:Wpf.Ui.Gallery.Views.Pages.Text"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:Wpf.Ui.Gallery.Models"
+    xmlns:system="clr-namespace:System;assembly=System.Runtime"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="TextPage"
     controls:PageControlDocumentation.Show="False"
@@ -95,19 +96,19 @@
             ResizeDirection="Rows"
             ResizeBehavior="PreviousAndNext" />
 
-        <ListView
+        <ui:ListView
             Grid.Row="2"
             Margin="0"
             ItemsSource="{Binding ViewModel.TerminalLines, Mode=OneWay}"
             ScrollViewer.VerticalScrollBarVisibility="Auto">
-            <ListView.ItemTemplate>
-                <DataTemplate>
+            <ui:ListView.ItemTemplate>
+                <DataTemplate DataType="{x:Type system:String}">
                     <TextBlock
                         Margin="8,4"
                         Text="{Binding}"
                         TextWrapping="Wrap" />
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            </ui:ListView.ItemTemplate>
+        </ui:ListView>
     </Grid>
 </Page>
