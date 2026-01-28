@@ -10,9 +10,8 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Wpf.Ui.Gallery.ControlsLookup;
+using Wpf.Ui.Controls;
 using Wpf.Ui.Gallery.Models;
-using Wpf.Ui.Gallery.Views.Pages.Text;
 
 namespace Wpf.Ui.Gallery.ViewModels.Pages.Text;
 
@@ -23,31 +22,22 @@ public partial class TextViewModel : ViewModel
 
     private static ICollection<NavigationCard> LoadNavigationCards()
     {
-        var pages = ControlPages.FromNamespace(typeof(TextPage).Namespace!);
-        var titles = LoadTitlesFromCommands();
+        var commands = LoadCommandsFromJson();
 
         return new ObservableCollection<NavigationCard>(
-            pages.Select(
-                (x, index) =>
-                {
-                    var title =
-                        index < titles.Count && !string.IsNullOrWhiteSpace(titles[index])
-                            ? titles[index]
-                            : x.Name;
-
-                    return new NavigationCard
+            commands.Select(
+                command =>
+                    new NavigationCard
                     {
-                        Name = title,
-                        Icon = x.Icon,
-                        Description = x.Description,
-                        PageType = x.PageType,
-                    };
-                }
+                        Name = command.Title,
+                        Description = command.Terminal,
+                        Icon = SymbolRegular.Textbox24,
+                    }
             )
         );
     }
 
-    private static IReadOnlyList<string> LoadTitlesFromCommands()
+    private static IReadOnlyList<CommandDefinition> LoadCommandsFromJson()
     {
         try
         {
@@ -55,7 +45,7 @@ public partial class TextViewModel : ViewModel
 
             if (string.IsNullOrWhiteSpace(localAppData))
             {
-                return Array.Empty<string>();
+                return Array.Empty<CommandDefinition>();
             }
 
             var directory = Path.Combine(localAppData, "WpfUiGallery");
@@ -63,7 +53,7 @@ public partial class TextViewModel : ViewModel
 
             if (!File.Exists(path))
             {
-                return Array.Empty<string>();
+                return Array.Empty<CommandDefinition>();
             }
 
             using var stream = File.OpenRead(path);
@@ -73,13 +63,20 @@ public partial class TextViewModel : ViewModel
                 ?? new List<CommandDefinition>();
 
             return items
-                .Select(i => (i.Title ?? string.Empty).Trim())
-                .Where(title => !string.IsNullOrWhiteSpace(title))
+                .Select(
+                    i =>
+                        new CommandDefinition
+                        {
+                            Title = (i.Title ?? string.Empty).Trim(),
+                            Terminal = (i.Terminal ?? string.Empty).Trim(),
+                        }
+                )
+                .Where(i => !string.IsNullOrWhiteSpace(i.Title))
                 .ToList();
         }
         catch
         {
-            return Array.Empty<string>();
+            return Array.Empty<CommandDefinition>();
         }
     }
 
@@ -87,5 +84,8 @@ public partial class TextViewModel : ViewModel
     {
         [JsonPropertyName("title")]
         public string? Title { get; set; }
+
+        [JsonPropertyName("terminal")]
+        public string? Terminal { get; set; }
     }
 }
