@@ -96,19 +96,18 @@
             ResizeDirection="Rows"
             ResizeBehavior="PreviousAndNext" />
 
-        <ui:ListView
+        <RichTextBox
             Grid.Row="2"
             Margin="0"
-            ItemsSource="{Binding ViewModel.TerminalLines, Mode=OneWay}"
+            IsReadOnly="True"
+            BorderThickness="0"
+            Background="Transparent"
             ScrollViewer.VerticalScrollBarVisibility="Auto">
-            <ui:ListView.ItemTemplate>
-                <DataTemplate DataType="{x:Type system:String}">
-                    <TextBlock
-                        Margin="8,4"
-                        Text="{Binding}"
-                        TextWrapping="Wrap" />
-                </DataTemplate>
-            </ui:ListView.ItemTemplate>
-        </ui:ListView>
+            <FlowDocument FontFamily="Comic Sans MS">
+                <Paragraph>
+                    <Run Text="{Binding ViewModel.TerminalOutput, Mode=OneWay}" />
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
     </Grid>
 </Page>
