@@ -3,6 +3,8 @@
 // Copyright (C) Leszek Pomianowski and WPF UI Contributors.
 // All Rights Reserved.
 
+using System.Linq;
+using System.Windows.Media.Animation;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Gallery.Effects;
 using Wpf.Ui.Gallery.Models;
@@ -16,6 +18,8 @@ public partial class TextPage : INavigableView<TextViewModel>
     private SnowflakeEffect? _snowflake;
     private bool _terminalRowInitialized;
     private bool _isTerminalCollapsed;
+    private double _collapsedTerminalHeight;
+    private double _expandedTerminalHeight;
 
     public TextViewModel ViewModel { get; }
 
@@ -96,7 +100,10 @@ public partial class TextPage : INavigableView<TextViewModel>
             return;
         }
 
-        TerminalRow.Height = new GridLength(e.NewSize.Height + 10, GridUnitType.Pixel);
+        double collapsedHeight = e.NewSize.Height + 10;
+        TerminalRow.Height = new GridLength(collapsedHeight, GridUnitType.Pixel);
+        _collapsedTerminalHeight = collapsedHeight;
+        _expandedTerminalHeight = collapsedHeight * 5;
         _terminalRowInitialized = true;
         _isTerminalCollapsed = true;
     }
@@ -108,16 +115,62 @@ public partial class TextPage : INavigableView<TextViewModel>
             return;
         }
 
+        string storyboardKey = _isTerminalCollapsed ? "TerminalExpandStoryboard" : "TerminalCollapseStoryboard";
+        if (FindResource(storyboardKey) is not Storyboard storyboard)
+        {
+            if (_isTerminalCollapsed)
+            {
+                TerminalRow.Height = new GridLength(_expandedTerminalHeight, GridUnitType.Pixel);
+            }
+            else
+            {
+                TerminalRow.Height = new GridLength(_collapsedTerminalHeight, GridUnitType.Pixel);
+            }
+
+            _isTerminalCollapsed = !_isTerminalCollapsed;
+            return;
+        }
+
+        GridLengthAnimation? animation = storyboard.Children.OfType<GridLengthAnimation>().FirstOrDefault();
+        if (animation == null)
+        {
+            if (_isTerminalCollapsed)
+            {
+                TerminalRow.Height = new GridLength(_expandedTerminalHeight, GridUnitType.Pixel);
+            }
+            else
+            {
+                TerminalRow.Height = new GridLength(_collapsedTerminalHeight, GridUnitType.Pixel);
+            }
+
+            _isTerminalCollapsed = !_isTerminalCollapsed;
+            return;
+        }
+
+        double currentHeight = TerminalRow.ActualHeight;
+        if (currentHeight <= 0)
+        {
+            currentHeight = _isTerminalCollapsed ? _collapsedTerminalHeight : _expandedTerminalHeight;
+        }
+
         if (_isTerminalCollapsed)
         {
-            TerminalRow.Height = new GridLength(1, GridUnitType.Star);
-            _isTerminalCollapsed = false;
+            animation.From = new GridLength(currentHeight, GridUnitType.Pixel);
+            animation.To = new GridLength(_expandedTerminalHeight, GridUnitType.Pixel);
         }
         else
         {
-            var headerHeight = TerminalHeaderGrid.ActualHeight;
-            TerminalRow.Height = new GridLength(headerHeight + 10, GridUnitType.Pixel);
-            _isTerminalCollapsed = true;
+            _expandedTerminalHeight = currentHeight;
+            animation.From = new GridLength(currentHeight, GridUnitType.Pixel);
+            animation.To = new GridLength(_collapsedTerminalHeight, GridUnitType.Pixel);
         }
+
+        animation.EasingFunction = new CubicEase
+        {
+            EasingMode = EasingMode.EaseInOut,
+        };
+
+        storyboard.Begin(this);
+        _isTerminalCollapsed = !_isTerminalCollapsed;
     }
 }
