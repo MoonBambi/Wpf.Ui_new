@@ -30,6 +30,7 @@ public partial class TextViewModel : ViewModel
     private ObservableCollection<string> _terminalLines = new();
 
     private readonly IReadOnlyList<CommandDefinition> _commands;
+    private readonly string _initialWorkingDirectory;
     private string _currentWorkingDirectory;
 
     public TextViewModel()
@@ -38,9 +39,11 @@ public partial class TextViewModel : ViewModel
 
         var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
-        _currentWorkingDirectory = string.IsNullOrWhiteSpace(userProfile)
+        _initialWorkingDirectory = string.IsNullOrWhiteSpace(userProfile)
             ? Directory.GetCurrentDirectory()
             : userProfile;
+
+        _currentWorkingDirectory = _initialWorkingDirectory;
 
         NavigationCards = new ObservableCollection<NavigationCard>(
             _commands.Select(
@@ -53,6 +56,12 @@ public partial class TextViewModel : ViewModel
                     }
             )
         );
+    }
+
+    public void ResetTerminal()
+    {
+        _currentWorkingDirectory = _initialWorkingDirectory;
+        TerminalOutput = string.Empty;
     }
 
     partial void OnTerminalOutputChanged(string value)

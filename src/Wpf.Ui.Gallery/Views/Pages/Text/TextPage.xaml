@@ -151,7 +151,9 @@
                             Icon="{ui:SymbolIcon ChevronUp24}"
                             Click="ToggleTerminalButton_OnClick" />
                         <ui:Button
-                            Icon="{ui:SymbolIcon Eraser24}" />
+                            x:Name="TerminalClearButton"
+                            Icon="{ui:SymbolIcon Eraser24}"
+                            Click="TerminalClearButton_OnClick" />
                     </StackPanel>
                 </Grid>
 

@@ -127,6 +127,11 @@ public partial class TextPage : INavigableView<TextViewModel>
         }
     }
 
+    private void TerminalClearButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.ResetTerminal();
+    }
+
     private void EnsureTerminalExpanded()
     {
         if (!_terminalRowInitialized || ! _isTerminalCollapsed)
