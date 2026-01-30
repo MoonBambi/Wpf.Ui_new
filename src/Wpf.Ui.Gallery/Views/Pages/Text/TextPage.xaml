@@ -169,8 +169,10 @@
                     BorderThickness="0"
                     Background="Transparent"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    FontFamily="Cascadia Code SemiBold">
-                    <FlowDocument FontFamily="{StaticResource ContentControlThemeFontFamily}">
+                    FontFamily="Cascadia Code SemiBold" FontSize="12" FontWeight="Bold">
+                    <FlowDocument
+                        FontFamily="{StaticResource ContentControlThemeFontFamily}"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}">
                         <Paragraph>
                             <Run Text="{Binding ViewModel.TerminalOutput, Mode=OneWay}" />
                         </Paragraph>
