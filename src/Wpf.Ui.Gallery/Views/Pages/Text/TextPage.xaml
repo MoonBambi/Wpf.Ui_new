@@ -131,7 +131,8 @@
                         HorizontalAlignment="Right">
                         <ui:Button
                             Margin="0,0,8,0"
-                            Icon="{ui:SymbolIcon CaretDown24}" />
+                            Icon="{ui:SymbolIcon CaretDown24}"
+                            Click="ToggleTerminalButton_OnClick" />
                         <ui:Button
                             Icon="{ui:SymbolIcon Eraser24}" />
                     </StackPanel>

@@ -15,6 +15,7 @@ public partial class TextPage : INavigableView<TextViewModel>
     private readonly INavigationService _navigationService;
     private SnowflakeEffect? _snowflake;
     private bool _terminalRowInitialized;
+    private bool _isTerminalCollapsed;
 
     public TextViewModel ViewModel { get; }
 
@@ -97,5 +98,26 @@ public partial class TextPage : INavigableView<TextViewModel>
 
         TerminalRow.Height = new GridLength(e.NewSize.Height + 10, GridUnitType.Pixel);
         _terminalRowInitialized = true;
+        _isTerminalCollapsed = true;
+    }
+
+    private void ToggleTerminalButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (!_terminalRowInitialized)
+        {
+            return;
+        }
+
+        if (_isTerminalCollapsed)
+        {
+            TerminalRow.Height = new GridLength(1, GridUnitType.Star);
+            _isTerminalCollapsed = false;
+        }
+        else
+        {
+            var headerHeight = TerminalHeaderGrid.ActualHeight;
+            TerminalRow.Height = new GridLength(headerHeight + 10, GridUnitType.Pixel);
+            _isTerminalCollapsed = true;
+        }
     }
 }
