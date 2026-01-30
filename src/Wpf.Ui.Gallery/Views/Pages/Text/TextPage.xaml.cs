@@ -14,6 +14,7 @@ public partial class TextPage : INavigableView<TextViewModel>
 {
     private readonly INavigationService _navigationService;
     private SnowflakeEffect? _snowflake;
+    private bool _terminalRowInitialized;
 
     public TextViewModel ViewModel { get; }
 
@@ -85,5 +86,16 @@ public partial class TextPage : INavigableView<TextViewModel>
         _snowflake = null;
         Loaded -= HandleLoaded;
         Unloaded -= HandleUnloaded;
+    }
+
+    private void TerminalHeaderGrid_OnSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (_terminalRowInitialized)
+        {
+            return;
+        }
+
+        TerminalRow.Height = new GridLength(e.NewSize.Height + 10, GridUnitType.Pixel);
+        _terminalRowInitialized = true;
     }
 }

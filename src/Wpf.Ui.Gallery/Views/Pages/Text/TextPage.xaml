@@ -23,7 +23,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition x:Name="TerminalRow" Height="*" />
         </Grid.RowDefinitions>
 
         <ScrollViewer
@@ -94,7 +94,8 @@
             Height="4"
             HorizontalAlignment="Stretch"
             ResizeDirection="Rows"
-            ResizeBehavior="PreviousAndNext" />
+            ResizeBehavior="PreviousAndNext"
+            Background="Transparent" />
 
         <Border
             Grid.Row="2"
@@ -109,17 +110,32 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <StackPanel
+                <Grid
+                    x:Name="TerminalHeaderGrid"
                     Grid.Row="0"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Margin="0,4,4,0">
-                    <ui:Button
-                        Margin="0,0,8,0"
-                        Icon="{ui:SymbolIcon CaretDown24}" />
-                    <ui:Button
-                        Icon="{ui:SymbolIcon Eraser24}" />
-                </StackPanel>
+                    Margin="8,4,8,0"
+                    SizeChanged="TerminalHeaderGrid_OnSizeChanged">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Text="输出" />
+
+                    <StackPanel
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+                        <ui:Button
+                            Margin="0,0,8,0"
+                            Icon="{ui:SymbolIcon CaretDown24}" />
+                        <ui:Button
+                            Icon="{ui:SymbolIcon Eraser24}" />
+                    </StackPanel>
+                </Grid>
 
                 <!-- 卡片内部的分隔线 -->
                 <Border
