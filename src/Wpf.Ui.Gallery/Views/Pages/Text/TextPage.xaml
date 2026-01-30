@@ -96,18 +96,53 @@
             ResizeDirection="Rows"
             ResizeBehavior="PreviousAndNext" />
 
-        <RichTextBox
+        <Border
             Grid.Row="2"
-            Margin="0"
-            IsReadOnly="True"
-            BorderThickness="0"
-            Background="Transparent"
-            ScrollViewer.VerticalScrollBarVisibility="Auto" FontFamily="Source Han Sans SC">
-            <FlowDocument FontFamily="{StaticResource ContentControlThemeFontFamily}">
-                <Paragraph>
-                    <Run Text="{Binding ViewModel.TerminalOutput, Mode=OneWay}" />
-                </Paragraph>
-            </FlowDocument>
-        </RichTextBox>
+            CornerRadius="8"
+            BorderThickness="1"
+            BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackPanel
+                    Grid.Row="0"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,4,4,0">
+                    <ui:Button
+                        Margin="0,0,8,0"
+                        Icon="{ui:SymbolIcon CaretDown24}" />
+                    <ui:Button
+                        Icon="{ui:SymbolIcon Eraser24}" />
+                </StackPanel>
+
+                <!-- 卡片内部的分隔线 -->
+                <Border
+                    Grid.Row="1"
+                    Margin="0,4,0,0"
+                    BorderThickness="0,1,0,0"
+                    BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" />
+
+                <RichTextBox
+                    Grid.Row="2"
+                    Margin="4,0,4,4"
+                    IsReadOnly="True"
+                    BorderThickness="0"
+                    Background="Transparent"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    FontFamily="Cascadia Code SemiBold">
+                    <FlowDocument FontFamily="{StaticResource ContentControlThemeFontFamily}">
+                        <Paragraph>
+                            <Run Text="{Binding ViewModel.TerminalOutput, Mode=OneWay}" />
+                        </Paragraph>
+                    </FlowDocument>
+                </RichTextBox>
+            </Grid>
+        </Border>
     </Grid>
 </Page>
