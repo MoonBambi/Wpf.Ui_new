@@ -30,10 +30,17 @@ public partial class TextViewModel : ViewModel
     private ObservableCollection<string> _terminalLines = new();
 
     private readonly IReadOnlyList<CommandDefinition> _commands;
+    private string _currentWorkingDirectory;
 
     public TextViewModel()
     {
         _commands = LoadCommandsFromJson();
+
+        var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
+        _currentWorkingDirectory = string.IsNullOrWhiteSpace(userProfile)
+            ? Directory.GetCurrentDirectory()
+            : userProfile;
 
         NavigationCards = new ObservableCollection<NavigationCard>(
             _commands.Select(
@@ -122,7 +129,12 @@ public partial class TextViewModel : ViewModel
 
         if (commandDefinition == null)
         {
-            TerminalOutput = "未找到匹配的命令";
+            if (!string.IsNullOrEmpty(TerminalOutput))
+            {
+                TerminalOutput += Environment.NewLine;
+            }
+
+            TerminalOutput += "未找到匹配的命令";
             return;
         }
 
@@ -130,17 +142,47 @@ public partial class TextViewModel : ViewModel
 
         if (string.IsNullOrWhiteSpace(commandText))
         {
-            TerminalOutput = "命令为空";
+            if (!string.IsNullOrEmpty(TerminalOutput))
+            {
+                TerminalOutput += Environment.NewLine;
+            }
+
+            TerminalOutput += "命令为空";
             return;
         }
 
         var terminal = NormalizeTerminal(commandDefinition.Terminal);
+        var workingDirectoryBeforeCommand = _currentWorkingDirectory;
 
         try
         {
-            TerminalOutput = $"> {commandText}{Environment.NewLine}";
+            var handledLocally = TryHandleDirectoryCommand(commandText, terminal);
 
-            using var process = CreateProcess(terminal, commandText);
+            var sessionBuilder = new StringBuilder();
+
+            sessionBuilder
+                .Append('[')
+                .Append(workingDirectoryBeforeCommand)
+                .Append("] > ")
+                .Append(commandText)
+                .AppendLine();
+
+            if (handledLocally)
+            {
+                sessionBuilder.Append("命令执行完成");
+
+                if (!string.IsNullOrEmpty(TerminalOutput))
+                {
+                    TerminalOutput += Environment.NewLine;
+                }
+
+                TerminalOutput += sessionBuilder.ToString();
+                return;
+            }
+
+            var processWorkingDirectory = _currentWorkingDirectory;
+
+            using var process = CreateProcess(terminal, commandText, processWorkingDirectory);
 
             var outputBuilder = new StringBuilder();
 
@@ -169,12 +211,109 @@ public partial class TextViewModel : ViewModel
                 outputBuilder.Append("命令执行完成");
             }
 
-            TerminalOutput += outputBuilder.ToString();
+            sessionBuilder.Append(outputBuilder);
+
+            if (!string.IsNullOrEmpty(TerminalOutput))
+            {
+                TerminalOutput += Environment.NewLine;
+            }
+
+            TerminalOutput += sessionBuilder.ToString();
         }
         catch (Exception ex)
         {
-            TerminalOutput = $"命令执行失败: {ex.Message}";
+            if (!string.IsNullOrEmpty(TerminalOutput))
+            {
+                TerminalOutput += Environment.NewLine;
+            }
+
+            TerminalOutput += $"命令执行失败: {ex.Message}";
         }
+    }
+
+    private bool TryHandleDirectoryCommand(string commandText, string terminal)
+    {
+        var value = (commandText ?? string.Empty).Trim();
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return false;
+        }
+
+        if (
+            terminal.Equals("cmd", StringComparison.OrdinalIgnoreCase)
+            || terminal.Equals("powershell", StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            if (value.Length == 2 && char.IsLetter(value[0]) && value[1] == ':')
+            {
+                var driveRoot = char.ToUpperInvariant(value[0]).ToString() + ":\\";
+
+                if (Directory.Exists(driveRoot))
+                {
+                    _currentWorkingDirectory = driveRoot;
+                }
+
+                return true;
+            }
+
+            if (value.StartsWith("cd", StringComparison.OrdinalIgnoreCase))
+            {
+                var argument = value.Length > 2 ? value.Substring(2).Trim() : string.Empty;
+
+                if (string.IsNullOrWhiteSpace(argument) || argument == ".")
+                {
+                    return true;
+                }
+
+                if (argument == "..")
+                {
+                    try
+                    {
+                        var parent = Directory.GetParent(_currentWorkingDirectory);
+
+                        if (parent != null)
+                        {
+                            _currentWorkingDirectory = parent.FullName;
+                        }
+                    }
+                    catch
+                    {
+                    }
+
+                    return true;
+                }
+
+                string candidatePath;
+
+                if (Path.IsPathRooted(argument))
+                {
+                    candidatePath = argument;
+                }
+                else
+                {
+                    try
+                    {
+                        candidatePath = Path.GetFullPath(
+                            Path.Combine(_currentWorkingDirectory, argument)
+                        );
+                    }
+                    catch
+                    {
+                        return true;
+                    }
+                }
+
+                if (Directory.Exists(candidatePath))
+                {
+                    _currentWorkingDirectory = candidatePath;
+                }
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static string NormalizeTerminal(string? terminal)
@@ -208,7 +347,7 @@ public partial class TextViewModel : ViewModel
         return value;
     }
 
-    private static Process CreateProcess(string terminal, string commandText)
+    private static Process CreateProcess(string terminal, string commandText, string workingDirectory)
     {
         var isPowerShell = terminal.Equals("pwsh", StringComparison.OrdinalIgnoreCase)
             || terminal.Equals("powershell", StringComparison.OrdinalIgnoreCase)
@@ -221,6 +360,11 @@ public partial class TextViewModel : ViewModel
             RedirectStandardError = true,
             CreateNoWindow = true,
         };
+
+        if (!string.IsNullOrWhiteSpace(workingDirectory))
+        {
+            startInfo.WorkingDirectory = workingDirectory;
+        }
 
         if (isPowerShell)
         {
