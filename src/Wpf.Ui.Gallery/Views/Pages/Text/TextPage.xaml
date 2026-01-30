@@ -146,6 +146,7 @@
                         Orientation="Horizontal"
                         HorizontalAlignment="Right">
                         <ui:Button
+                            x:Name="TerminalToggleButton"
                             Margin="0,0,8,0"
                             Icon="{ui:SymbolIcon ChevronUp24}"
                             Click="ToggleTerminalButton_OnClick" />

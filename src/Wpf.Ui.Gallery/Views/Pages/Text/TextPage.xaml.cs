@@ -39,6 +39,7 @@ public partial class TextPage : INavigableView<TextViewModel>
                     return;
                 }
 
+                EnsureTerminalExpanded();
                 await ViewModel.RunCommandAsync(navigationCard);
             })
         );
@@ -110,6 +111,26 @@ public partial class TextPage : INavigableView<TextViewModel>
 
     private void ToggleTerminalButton_OnClick(object sender, RoutedEventArgs e)
     {
+        if (sender is not Button button)
+        {
+            return;
+        }
+
+        ToggleTerminal(button);
+    }
+
+    private void EnsureTerminalExpanded()
+    {
+        if (!_terminalRowInitialized || ! _isTerminalCollapsed)
+        {
+            return;
+        }
+
+        ToggleTerminal(TerminalToggleButton);
+    }
+
+    private void ToggleTerminal(Button button)
+    {
         if (!_terminalRowInitialized)
         {
             return;
@@ -128,7 +149,7 @@ public partial class TextPage : INavigableView<TextViewModel>
             }
 
             _isTerminalCollapsed = !_isTerminalCollapsed;
-            UpdateTerminalToggleIcon(sender);
+            UpdateTerminalToggleIcon(button);
             return;
         }
 
@@ -145,7 +166,7 @@ public partial class TextPage : INavigableView<TextViewModel>
             }
 
             _isTerminalCollapsed = !_isTerminalCollapsed;
-            UpdateTerminalToggleIcon(sender);
+            UpdateTerminalToggleIcon(button);
             return;
         }
 
@@ -174,16 +195,11 @@ public partial class TextPage : INavigableView<TextViewModel>
 
         storyboard.Begin(this);
         _isTerminalCollapsed = !_isTerminalCollapsed;
-        UpdateTerminalToggleIcon(sender);
+        UpdateTerminalToggleIcon(button);
     }
 
-    private void UpdateTerminalToggleIcon(object? sender)
+    private void UpdateTerminalToggleIcon(Button button)
     {
-        if (sender is not Button button)
-        {
-            return;
-        }
-
         SymbolRegular symbol = _isTerminalCollapsed ? SymbolRegular.ChevronUp24 : SymbolRegular.ChevronDown24;
         button.Icon = new SymbolIcon
         {
