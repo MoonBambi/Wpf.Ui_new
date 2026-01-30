@@ -97,6 +97,6 @@
             </tray:NotifyIcon.Menu>
         </tray:NotifyIcon>
 
-        <ui:ContentDialogHost x:Name="RootContentDialog" Grid.Row="0" />
+        <ui:ContentDialogHost x:Name="RootContentDialog" Grid.Row="0" FontFamily="Source Han Sans SC" />
     </Grid>
 </ui:FluentWindow>

@@ -19,6 +19,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Fonts\SourceHanSansSC-Bold.otf" />
+    <Resource Include="Fonts\SourceHanSansSC-ExtraLight.otf" />
+    <Resource Include="Fonts\SourceHanSansSC-Heavy.otf" />
+    <Resource Include="Fonts\SourceHanSansSC-Light.otf" />
+    <Resource Include="Fonts\SourceHanSansSC-Medium.otf" />
+    <Resource Include="Fonts\SourceHanSansSC-Normal.otf" />
+    <Resource Include="Fonts\SourceHanSansSC-Regular.otf" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Lepo.i18n.DependencyInjection" />
     <PackageReference Include="Lepo.i18n.Wpf" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />

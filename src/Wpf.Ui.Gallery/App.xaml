@@ -28,6 +28,10 @@
             <helpers:ThemeToIndexConverter x:Key="ThemeToIndexConverter" />
             <helpers:PaneDisplayModeToIndexConverter x:Key="PaneDisplayModeToIndexConverter" />
 
+            <FontFamily x:Key="ContentControlThemeFontFamily">
+                pack://application:,,,/Wpf.Ui.Gallery;component/Fonts/#Source Han Sans SC
+            </FontFamily>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

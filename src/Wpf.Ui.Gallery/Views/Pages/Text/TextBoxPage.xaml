@@ -35,7 +35,7 @@
             <controls:ControlExample
                 Margin="0,0,0,0"
                 HeaderText="标题."
-                XamlCode="&lt;ui:TextBox PlaceholderText=&quot;...&quot; /&gt;">
+                XamlCode="&lt;ui:TextBox PlaceholderText=&quot;...&quot; /&gt;" FontFamily="Source Han Sans SC">
                 <controls:ControlExample.ExpanderHeader>
                     <MultiBinding Converter="{StaticResource CommandOptionHeaderConverter}">
                         <Binding ElementName="CmdRadio" Path="IsChecked" />
@@ -61,7 +61,7 @@
                 <controls:ControlExample
                 Margin="0,36,0,0"
                 HeaderText="命令."
-                IsExpanderVisible="False">
+                IsExpanderVisible="False" FontFamily="Source Han Sans SC">
                 <ui:TextBox
                     x:Name="LiveTextBox"
                     PlaceholderText="..."

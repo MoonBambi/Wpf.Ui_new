@@ -69,7 +69,7 @@
                                 Foreground="{DynamicResource TextControlPlaceholderForeground}"
                                 FontSize="14"
                                 Panel.ZIndex="-1"
-                                TextWrapping="Wrap">
+                                TextWrapping="Wrap" FontFamily="Source Han Sans SC">
                                 WPF UI provides the Fluent experience in your known and loved WPF framework. Intuitive design, themes, navigation and new immersive controls. All natively and effortlessly. Library changes the base elements like Page, ToggleButton or List, and also includes additional controls like Navigation, NumberBox, Dialog or Snackbar.
                                 <LineBreak />
                                 <LineBreak />
@@ -102,8 +102,8 @@
             IsReadOnly="True"
             BorderThickness="0"
             Background="Transparent"
-            ScrollViewer.VerticalScrollBarVisibility="Auto">
-            <FlowDocument FontFamily="Comic Sans MS">
+            ScrollViewer.VerticalScrollBarVisibility="Auto" FontFamily="Source Han Sans SC">
+            <FlowDocument FontFamily="{StaticResource ContentControlThemeFontFamily}">
                 <Paragraph>
                     <Run Text="{Binding ViewModel.TerminalOutput, Mode=OneWay}" />
                 </Paragraph>
