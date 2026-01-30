@@ -128,6 +128,7 @@ public partial class TextPage : INavigableView<TextViewModel>
             }
 
             _isTerminalCollapsed = !_isTerminalCollapsed;
+            UpdateTerminalToggleIcon(sender);
             return;
         }
 
@@ -144,6 +145,7 @@ public partial class TextPage : INavigableView<TextViewModel>
             }
 
             _isTerminalCollapsed = !_isTerminalCollapsed;
+            UpdateTerminalToggleIcon(sender);
             return;
         }
 
@@ -172,5 +174,20 @@ public partial class TextPage : INavigableView<TextViewModel>
 
         storyboard.Begin(this);
         _isTerminalCollapsed = !_isTerminalCollapsed;
+        UpdateTerminalToggleIcon(sender);
+    }
+
+    private void UpdateTerminalToggleIcon(object? sender)
+    {
+        if (sender is not Button button)
+        {
+            return;
+        }
+
+        SymbolRegular symbol = _isTerminalCollapsed ? SymbolRegular.ChevronUp24 : SymbolRegular.ChevronDown24;
+        button.Icon = new SymbolIcon
+        {
+            Symbol = symbol,
+        };
     }
 }
