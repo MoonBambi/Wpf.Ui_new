@@ -33,6 +33,17 @@
                 Storyboard.TargetName="TerminalRow"
                 Storyboard.TargetProperty="Height" />
         </Storyboard>
+
+        <SolidColorBrush x:Key="CommandBrush" Color="#DCDCAA" />
+        <SolidColorBrush x:Key="OutputBrush" Color="#D4D4D4" />
+        <SolidColorBrush x:Key="ErrorBrush" Color="#FF6B68" />
+        <SolidColorBrush x:Key="SystemBrush" Color="#569CD6" />
+
+        <SolidColorBrush x:Key="CommandBrushLight" Color="#0057D2" />
+        <SolidColorBrush x:Key="OutputBrushLight" Color="#707070" />
+        <SolidColorBrush x:Key="ErrorBrushLight" Color="#C05050" />
+        <SolidColorBrush x:Key="SystemBrushLight" Color="#188038" />
+        <SolidColorBrush x:Key="TerminalBackgroundLight" Color="#F7F9FB" />
     </Page.Resources>
 
     <Grid>
@@ -52,49 +63,15 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Height="200" ClipToBounds="True">
-                    <Grid>
-                        <Rectangle VerticalAlignment="Bottom" Height="200" RadiusX="8" RadiusY="8" Panel.ZIndex="0">
-                            <Rectangle.Fill>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                    <GradientStop Color="{DynamicResource SnowflakeGradientTop}" Offset="0" />
-                                    <GradientStop Color="{DynamicResource SnowflakeGradientBottom}" Offset="1" />
-                                </LinearGradientBrush>
-                            </Rectangle.Fill>
-                        </Rectangle>
-
-                        <Grid Margin="10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0" Panel.ZIndex="1">
-                                <ui:SymbolIcon x:Name="MainSymbolIcon" FontSize="100" />
-                                <TextBlock
-                                    x:Name="MainTitle"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    FontSize="28"
-                                    FontWeight="Black" />
-                            </StackPanel>
-
-                            <TextBlock
-                                Grid.Column="1"
-                                HorizontalAlignment="Center"
-                                Margin="30"
-                                Foreground="{DynamicResource TextControlPlaceholderForeground}"
-                                FontSize="14"
-                                Panel.ZIndex="-1"
-                                TextWrapping="Wrap" FontFamily="Source Han Sans SC">
-                                WPF UI provides the Fluent experience in your known and loved WPF framework. Intuitive design, themes, navigation and new immersive controls. All natively and effortlessly. Library changes the base elements like Page, ToggleButton or List, and also includes additional controls like Navigation, NumberBox, Dialog or Snackbar.
-                                <LineBreak />
-                                <LineBreak />
-                                Support the development of WPF UI and other innovative projects by becoming a sponsor on GitHub! Your monthly or one-time contributions help us continue to deliver high-quality, open-source solutions that empower developers worldwide.
-                            </TextBlock>
-                        </Grid>
-
-                        <Canvas x:Name="MainCanvas" Panel.ZIndex="2" />
-                    </Grid>
+                <Grid Grid.Row="0">
+                    <StackPanel Margin="10">
+                        <TextBlock
+                            x:Name="MainTitle"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontSize="28"
+                            FontWeight="Black" />
+                    </StackPanel>
                 </Grid>
 
                 <controls:GalleryNavigationPresenter
@@ -167,23 +144,15 @@
                 <RichTextBox
                     x:Name="TerminalRichTextBox"
                     Grid.Row="2"
-                    Margin="4,0,4,4"
+                    Margin="4,4,4,4"
                     IsReadOnly="True"
                     BorderThickness="0"
                     Background="Transparent"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
                     FontFamily="Cascadia Code SemiBold"
-                    FontSize="12"
+                    FontSize="16"
                     FontWeight="Bold"
-                    TextChanged="TerminalRichTextBox_OnTextChanged">
-                    <FlowDocument
-                        FontFamily="{StaticResource ContentControlThemeFontFamily}"
-                        Foreground="{DynamicResource TextFillColorSecondaryBrush}">
-                        <Paragraph>
-                            <Run Text="{Binding ViewModel.TerminalOutput, Mode=OneWay}" />
-                        </Paragraph>
-                    </FlowDocument>
-                </RichTextBox>
+                    TextChanged="TerminalRichTextBox_OnTextChanged" />
             </Grid>
         </Border>
     </Grid>

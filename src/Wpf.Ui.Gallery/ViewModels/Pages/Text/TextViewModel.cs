@@ -32,6 +32,7 @@ public partial class TextViewModel : ViewModel
     private readonly IReadOnlyList<CommandDefinition> _commands;
     private readonly string _initialWorkingDirectory;
     private string _currentWorkingDirectory;
+    private TerminalSession? _session;
 
     public TextViewModel()
     {
@@ -60,6 +61,8 @@ public partial class TextViewModel : ViewModel
 
     public void ResetTerminal()
     {
+        _session?.Dispose();
+        _session = null;
         _currentWorkingDirectory = _initialWorkingDirectory;
         TerminalOutput = string.Empty;
     }
@@ -125,11 +128,11 @@ public partial class TextViewModel : ViewModel
         }
     }
 
-    public async Task RunCommandAsync(NavigationCard? card)
+    public Task RunCommandAsync(NavigationCard? card)
     {
         if (card is null)
         {
-            return;
+            return Task.CompletedTask;
         }
 
         var commandDefinition = _commands.FirstOrDefault(
@@ -144,7 +147,7 @@ public partial class TextViewModel : ViewModel
             }
 
             TerminalOutput += "未找到匹配的命令";
-            return;
+            return Task.CompletedTask;
         }
 
         var commandText = (commandDefinition.Command ?? string.Empty).Trim();
@@ -157,87 +160,85 @@ public partial class TextViewModel : ViewModel
             }
 
             TerminalOutput += "命令为空";
+            return Task.CompletedTask;
+        }
+
+        var terminal = _session?.Terminal ?? NormalizeTerminal(commandDefinition.Terminal);
+        var workingDirectoryBeforeCommand = _currentWorkingDirectory;
+
+        var handledLocally = TryHandleDirectoryCommand(commandText, terminal);
+
+        EnsureSession(terminal);
+
+        var prefixBuilder = new StringBuilder();
+
+        prefixBuilder
+            .Append('[')
+            .Append(workingDirectoryBeforeCommand)
+            .Append("] > ")
+            .Append(commandText);
+
+        AppendToTerminal(prefixBuilder.ToString());
+
+        _session?.SendCommand(commandText);
+
+        return Task.CompletedTask;
+    }
+
+    private void EnsureSession(string terminal)
+    {
+        if (_session != null)
+        {
             return;
         }
 
-        var terminal = NormalizeTerminal(commandDefinition.Terminal);
-        var workingDirectoryBeforeCommand = _currentWorkingDirectory;
+        _session = new TerminalSession(terminal, _currentWorkingDirectory);
+        _session.OutputReceived += HandleSessionOutput;
+        _session.ErrorReceived += HandleSessionError;
 
         try
         {
-            var handledLocally = TryHandleDirectoryCommand(commandText, terminal);
-
-            var sessionBuilder = new StringBuilder();
-
-            sessionBuilder
-                .Append('[')
-                .Append(workingDirectoryBeforeCommand)
-                .Append("] > ")
-                .Append(commandText)
-                .AppendLine();
-
-            if (handledLocally)
-            {
-                sessionBuilder.Append("命令执行完成");
-
-                if (!string.IsNullOrEmpty(TerminalOutput))
-                {
-                    TerminalOutput += Environment.NewLine;
-                }
-
-                TerminalOutput += sessionBuilder.ToString();
-                return;
-            }
-
-            var processWorkingDirectory = _currentWorkingDirectory;
-
-            using var process = CreateProcess(terminal, commandText, processWorkingDirectory);
-
-            var outputBuilder = new StringBuilder();
-
-            process.Start();
-
-            var standardOutputTask = process.StandardOutput.ReadToEndAsync();
-            var standardErrorTask = process.StandardError.ReadToEndAsync();
-
-            await Task.WhenAll(standardOutputTask, standardErrorTask);
-            await process.WaitForExitAsync();
-
-            outputBuilder.Append(standardOutputTask.Result);
-
-            if (!string.IsNullOrWhiteSpace(standardErrorTask.Result))
-            {
-                if (outputBuilder.Length > 0)
-                {
-                    outputBuilder.AppendLine();
-                }
-
-                outputBuilder.Append(standardErrorTask.Result);
-            }
-
-            if (outputBuilder.Length == 0)
-            {
-                outputBuilder.Append("命令执行完成");
-            }
-
-            sessionBuilder.Append(outputBuilder);
-
-            if (!string.IsNullOrEmpty(TerminalOutput))
-            {
-                TerminalOutput += Environment.NewLine;
-            }
-
-            TerminalOutput += sessionBuilder.ToString();
+            _session.Start();
         }
         catch (Exception ex)
+        {
+            _session.Dispose();
+            _session = null;
+            AppendToTerminal($"终端启动失败: {ex.Message}");
+        }
+    }
+
+    private void HandleSessionOutput(string value)
+    {
+        AppendToTerminal(value);
+    }
+
+    private void HandleSessionError(string value)
+    {
+        AppendToTerminal(value);
+    }
+
+    private void AppendToTerminal(string value)
+    {
+        void Append()
         {
             if (!string.IsNullOrEmpty(TerminalOutput))
             {
                 TerminalOutput += Environment.NewLine;
             }
 
-            TerminalOutput += $"命令执行失败: {ex.Message}";
+            TerminalOutput += value;
         }
+
+        var application = System.Windows.Application.Current;
+
+        if (application?.Dispatcher?.CheckAccess() == true)
+        {
+            Append();
+            return;
+        }
+
+        application?.Dispatcher?.Invoke(Append);
     }
 
     private bool TryHandleDirectoryCommand(string commandText, string terminal)
@@ -356,42 +357,96 @@ public partial class TextViewModel : ViewModel
         return value;
     }
 
-    private static Process CreateProcess(string terminal, string commandText, string workingDirectory)
+    private sealed class TerminalSession : IDisposable
     {
-        var isPowerShell = terminal.Equals("pwsh", StringComparison.OrdinalIgnoreCase)
-            || terminal.Equals("powershell", StringComparison.OrdinalIgnoreCase)
-            || terminal.Equals("ps", StringComparison.OrdinalIgnoreCase);
+        private readonly Process _process;
+        private readonly string _terminal;
 
-        var startInfo = new ProcessStartInfo
-        {
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            CreateNoWindow = true,
-        };
+        public string Terminal => _terminal;
 
-        if (!string.IsNullOrWhiteSpace(workingDirectory))
+        public event Action<string>? OutputReceived;
+
+        public event Action<string>? ErrorReceived;
+
+        public TerminalSession(string terminal, string workingDirectory)
         {
-            startInfo.WorkingDirectory = workingDirectory;
+            _terminal = terminal;
+            _process = new Process();
+
+            _process.StartInfo.UseShellExecute = false;
+            _process.StartInfo.RedirectStandardInput = true;
+            _process.StartInfo.RedirectStandardOutput = true;
+            _process.StartInfo.RedirectStandardError = true;
+            _process.StartInfo.CreateNoWindow = true;
+
+            if (!string.IsNullOrWhiteSpace(workingDirectory))
+            {
+                _process.StartInfo.WorkingDirectory = workingDirectory;
+            }
+
+            if (string.Equals(terminal, "powershell", StringComparison.OrdinalIgnoreCase))
+            {
+                _process.StartInfo.FileName = "powershell.exe";
+                _process.StartInfo.Arguments = "-NoLogo -NoProfile";
+            }
+            else if (string.Equals(terminal, "bash", StringComparison.OrdinalIgnoreCase))
+            {
+                _process.StartInfo.FileName = "bash";
+            }
+            else
+            {
+                _process.StartInfo.FileName = "cmd.exe";
+            }
+
+            _process.OutputDataReceived += (_, e) =>
+            {
+                if (e.Data != null)
+                {
+                    OutputReceived?.Invoke(e.Data);
+                }
+            };
+
+            _process.ErrorDataReceived += (_, e) =>
+            {
+                if (e.Data != null)
+                {
+                    ErrorReceived?.Invoke(e.Data);
+                }
+            };
         }
 
-        if (isPowerShell)
+        public void Start()
         {
-            startInfo.FileName = "pwsh.exe";
-            startInfo.Arguments = $"-NoLogo -NoProfile -Command \"{commandText}\"";
-        }
-        else if (terminal.Equals("bash", StringComparison.OrdinalIgnoreCase))
-        {
-            startInfo.FileName = "bash";
-            startInfo.Arguments = $"-c \"{commandText}\"";
-        }
-        else
-        {
-            startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = $"/C {commandText}";
+            _process.Start();
+            _process.BeginOutputReadLine();
+            _process.BeginErrorReadLine();
         }
 
-        return new Process { StartInfo = startInfo };
+        public void SendCommand(string command)
+        {
+            if (_process.HasExited)
+            {
+                return;
+            }
+
+            _process.StandardInput.WriteLine(command);
+        }
+
+        public void Dispose()
+        {
+            try
+            {
+                if (!_process.HasExited)
+                {
+                    _process.Kill();
+                }
+            }
+            catch
+            {
+            }
+
+            _process.Dispose();
+        }
     }
 
     private sealed class CommandDefinition
