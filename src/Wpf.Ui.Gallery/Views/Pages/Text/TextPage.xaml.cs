@@ -119,6 +119,14 @@ public partial class TextPage : INavigableView<TextViewModel>
         ToggleTerminal(button);
     }
 
+    private void TerminalRichTextBox_OnTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.RichTextBox richTextBox)
+        {
+            richTextBox.ScrollToEnd();
+        }
+    }
+
     private void EnsureTerminalExpanded()
     {
         if (!_terminalRowInitialized || ! _isTerminalCollapsed)

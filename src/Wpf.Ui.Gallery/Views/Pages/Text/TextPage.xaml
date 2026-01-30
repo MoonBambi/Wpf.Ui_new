@@ -163,13 +163,17 @@
                     BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" />
 
                 <RichTextBox
+                    x:Name="TerminalRichTextBox"
                     Grid.Row="2"
                     Margin="4,0,4,4"
                     IsReadOnly="True"
                     BorderThickness="0"
                     Background="Transparent"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    FontFamily="Cascadia Code SemiBold" FontSize="12" FontWeight="Bold">
+                    FontFamily="Cascadia Code SemiBold"
+                    FontSize="12"
+                    FontWeight="Bold"
+                    TextChanged="TerminalRichTextBox_OnTextChanged">
                     <FlowDocument
                         FontFamily="{StaticResource ContentControlThemeFontFamily}"
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}">
