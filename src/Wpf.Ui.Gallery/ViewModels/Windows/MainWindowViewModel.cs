@@ -36,12 +36,6 @@ public partial class MainWindowViewModel(IStringLocalizer<Translations> localize
         {
             MenuItemsSource = new object[]
             {
-                new NavigationViewItem(nameof(AutoSuggestBox), typeof(AutoSuggestBoxPage)),
-                new NavigationViewItem(nameof(NumberBox), typeof(NumberBoxPage)),
-                new NavigationViewItem(nameof(Wpf.Ui.Controls.PasswordBox), typeof(PasswordBoxPage)),
-                new NavigationViewItem(nameof(Wpf.Ui.Controls.RichTextBox), typeof(RichTextBoxPage)),
-                new NavigationViewItem(nameof(Label), typeof(LabelPage)),
-                new NavigationViewItem(nameof(Wpf.Ui.Controls.TextBlock), typeof(TextBlockPage)),
                 new NavigationViewItem("元件制作", typeof(TextBoxPage)),
             },
         },
