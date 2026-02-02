@@ -54,6 +54,21 @@ public partial class TextPage : INavigableView<TextViewModel>
             })
         );
         CommandsPresenter.SetValue(
+            Wpf.Ui.Gallery.Controls.GalleryNavigationPresenter.EditButtonCommandProperty,
+            new Wpf.Ui.Input.RelayCommand<NavigationCard?>(navigationCard =>
+            {
+                if (navigationCard?.Name is null)
+                {
+                    return;
+                }
+
+                _navigationService.Navigate(
+                    typeof(CommandEditPage),
+                    navigationCard.Name
+                );
+            })
+        );
+        CommandsPresenter.SetValue(
             Wpf.Ui.Gallery.Controls.GalleryNavigationPresenter.DeleteButtonCommandProperty,
             new Wpf.Ui.Input.RelayCommand<NavigationCard?>(navigationCard =>
             {

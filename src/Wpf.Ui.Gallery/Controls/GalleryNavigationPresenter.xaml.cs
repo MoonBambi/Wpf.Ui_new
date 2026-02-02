@@ -38,6 +38,14 @@ public class GalleryNavigationPresenter : System.Windows.Controls.Control
             new PropertyMetadata(null)
         );
 
+    /// <summary>Identifies the <see cref="EditButtonCommand"/> dependency property.</summary>
+    public static readonly DependencyProperty EditButtonCommandProperty = DependencyProperty.Register(
+        nameof(EditButtonCommand),
+        typeof(Wpf.Ui.Input.IRelayCommand),
+        typeof(GalleryNavigationPresenter),
+        new PropertyMetadata(null)
+    );
+
     public event EventHandler<NavigationCard>? PlayRequested;
 
     public object? ItemsSource
@@ -51,6 +59,12 @@ public class GalleryNavigationPresenter : System.Windows.Controls.Control
     /// </summary>
     public Wpf.Ui.Input.IRelayCommand TemplateButtonCommand =>
         (Wpf.Ui.Input.IRelayCommand)GetValue(TemplateButtonCommandProperty);
+
+    public Wpf.Ui.Input.IRelayCommand? EditButtonCommand
+    {
+        get => (Wpf.Ui.Input.IRelayCommand?)GetValue(EditButtonCommandProperty);
+        set => SetValue(EditButtonCommandProperty, value);
+    }
 
     public Wpf.Ui.Input.IRelayCommand? DeleteButtonCommand
     {

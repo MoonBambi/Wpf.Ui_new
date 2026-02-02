@@ -76,6 +76,8 @@
                                                 Background="Transparent"
                                                 BorderThickness="0"
                                                 Appearance="Transparent"
+                                                Command="{Binding Path=EditButtonCommand, RelativeSource={RelativeSource AncestorType={x:Type controls:GalleryNavigationPresenter}}}"
+                                                CommandParameter="{Binding}"
                                                 Icon="{ui:SymbolIcon Edit24, FontSize=20}" />
                                             <ui:Button
                                                 Width="36"
