@@ -14,6 +14,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Wpf.Ui.Controls;
+using Wpf.Ui.Extensions;
 using Wpf.Ui.Gallery.Models;
 
 namespace Wpf.Ui.Gallery.ViewModels.Pages.Text;
@@ -30,6 +31,7 @@ public partial class TextViewModel : ViewModel
     private ObservableCollection<string> _terminalLines = new();
 
     private readonly List<CommandDefinition> _commands;
+    private readonly IContentDialogService? _contentDialogService;
     private readonly string _initialWorkingDirectory;
     private string _currentWorkingDirectory;
     private TerminalSession? _session;
@@ -59,6 +61,12 @@ public partial class TextViewModel : ViewModel
         );
     }
 
+    public TextViewModel(IContentDialogService contentDialogService)
+        : this()
+    {
+        _contentDialogService = contentDialogService;
+    }
+
     public void ResetTerminal()
     {
         _session?.Dispose();
@@ -67,7 +75,7 @@ public partial class TextViewModel : ViewModel
         TerminalOutput = string.Empty;
     }
 
-    public void DeleteCommand(NavigationCard? card)
+    public async void DeleteCommand(NavigationCard? card)
     {
         if (card is null)
         {
@@ -81,16 +89,36 @@ public partial class TextViewModel : ViewModel
             return;
         }
 
-        var result = System.Windows.MessageBox.Show(
-            $"确定删除命令“{title}”吗？",
-            "确认删除",
-            System.Windows.MessageBoxButton.YesNo,
-            System.Windows.MessageBoxImage.Question
-        );
-
-        if (result != System.Windows.MessageBoxResult.Yes)
+        if (_contentDialogService != null)
         {
-            return;
+            var result = await _contentDialogService.ShowSimpleDialogAsync(
+                new SimpleContentDialogCreateOptions
+                {
+                    Title = "确认删除",
+                    Content = $"确定删除命令“{title}”吗？",
+                    PrimaryButtonText = "删除",
+                    CloseButtonText = "取消",
+                }
+            );
+
+            if (result != ContentDialogResult.Primary)
+            {
+                return;
+            }
+        }
+        else
+        {
+            var result = System.Windows.MessageBox.Show(
+                $"确定删除命令“{title}”吗？",
+                "确认删除",
+                System.Windows.MessageBoxButton.YesNo,
+                System.Windows.MessageBoxImage.Question
+            );
+
+            if (result != System.Windows.MessageBoxResult.Yes)
+            {
+                return;
+            }
         }
 
         if (NavigationCards is ObservableCollection<NavigationCard> collection)
