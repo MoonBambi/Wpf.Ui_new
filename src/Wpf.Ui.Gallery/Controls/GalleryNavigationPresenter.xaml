@@ -3,8 +3,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:basicInput="clr-namespace:Wpf.Ui.Gallery.Views.Pages.BasicInput"
     xmlns:controls="clr-namespace:Wpf.Ui.Gallery.Controls"
+    xmlns:helpers="clr-namespace:Wpf.Ui.Gallery.Helpers"
     xmlns:models="clr-namespace:Wpf.Ui.Gallery.Models"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+
+    <helpers:TerminalToCardBackgroundConverter x:Key="TerminalToCardBackgroundConverter" />
 
     <Style TargetType="{x:Type controls:GalleryNavigationPresenter}">
         <Setter Property="Focusable" Value="False" />
@@ -28,7 +31,8 @@
                                     Padding="14,16,14,4"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Stretch"
-                                    IsChevronVisible="False">
+                                    IsChevronVisible="False"
+                                    Background="{Binding Description, Converter={StaticResource TerminalToCardBackgroundConverter}}">
                                     <Grid Margin="16,8,16,8">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="60" />
