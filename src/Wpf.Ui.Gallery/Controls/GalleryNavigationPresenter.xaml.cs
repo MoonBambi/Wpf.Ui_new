@@ -21,12 +21,22 @@ public class GalleryNavigationPresenter : System.Windows.Controls.Control
     );
 
     /// <summary>Identifies the <see cref="TemplateButtonCommand"/> dependency property.</summary>
-    public static readonly DependencyProperty TemplateButtonCommandProperty = DependencyProperty.Register(
-        nameof(TemplateButtonCommand),
-        typeof(Wpf.Ui.Input.IRelayCommand),
-        typeof(GalleryNavigationPresenter),
-        new PropertyMetadata(null)
-    );
+    public static readonly DependencyProperty TemplateButtonCommandProperty =
+        DependencyProperty.Register(
+            nameof(TemplateButtonCommand),
+            typeof(Wpf.Ui.Input.IRelayCommand),
+            typeof(GalleryNavigationPresenter),
+            new PropertyMetadata(null)
+        );
+
+    /// <summary>Identifies the <see cref="DeleteButtonCommand"/> dependency property.</summary>
+    public static readonly DependencyProperty DeleteButtonCommandProperty =
+        DependencyProperty.Register(
+            nameof(DeleteButtonCommand),
+            typeof(Wpf.Ui.Input.IRelayCommand),
+            typeof(GalleryNavigationPresenter),
+            new PropertyMetadata(null)
+        );
 
     public event EventHandler<NavigationCard>? PlayRequested;
 
@@ -42,13 +52,22 @@ public class GalleryNavigationPresenter : System.Windows.Controls.Control
     public Wpf.Ui.Input.IRelayCommand TemplateButtonCommand =>
         (Wpf.Ui.Input.IRelayCommand)GetValue(TemplateButtonCommandProperty);
 
+    public Wpf.Ui.Input.IRelayCommand? DeleteButtonCommand
+    {
+        get => (Wpf.Ui.Input.IRelayCommand?)GetValue(DeleteButtonCommandProperty);
+        set => SetValue(DeleteButtonCommandProperty, value);
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GalleryNavigationPresenter"/> class.
     /// Creates a new instance of the class and sets the default <see cref="FrameworkElement.Loaded"/> event.
     /// </summary>
     public GalleryNavigationPresenter()
     {
-        SetValue(TemplateButtonCommandProperty, new Input.RelayCommand<Type>(o => OnTemplateButtonClick(o)));
+        SetValue(
+            TemplateButtonCommandProperty,
+            new Wpf.Ui.Input.RelayCommand<Type>(o => OnTemplateButtonClick(o))
+        );
     }
 
     private void OnTemplateButtonClick(Type? pageType)

@@ -92,6 +92,8 @@
                                                 Background="Transparent"
                                                 BorderThickness="0"
                                                 Appearance="Transparent"
+                                                Command="{Binding Path=DeleteButtonCommand, RelativeSource={RelativeSource AncestorType={x:Type controls:GalleryNavigationPresenter}}}"
+                                                CommandParameter="{Binding}"
                                                 Icon="{ui:SymbolIcon Delete24, FontSize=20}" />
                                         </StackPanel>
                                     </Grid>

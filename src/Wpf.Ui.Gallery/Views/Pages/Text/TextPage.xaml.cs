@@ -53,6 +53,13 @@ public partial class TextPage : INavigableView<TextViewModel>
                 await ViewModel.RunCommandAsync(navigationCard);
             })
         );
+        CommandsPresenter.SetValue(
+            Wpf.Ui.Gallery.Controls.GalleryNavigationPresenter.DeleteButtonCommandProperty,
+            new Wpf.Ui.Input.RelayCommand<NavigationCard?>(navigationCard =>
+            {
+                ViewModel.DeleteCommand(navigationCard);
+            })
+        );
         Loaded += HandleLoaded;
         Unloaded += HandleUnloaded;
         if (ViewModel.TerminalLines is INotifyCollectionChanged notifyCollection)

@@ -29,14 +29,14 @@ public partial class TextViewModel : ViewModel
     [ObservableProperty]
     private ObservableCollection<string> _terminalLines = new();
 
-    private readonly IReadOnlyList<CommandDefinition> _commands;
+    private readonly List<CommandDefinition> _commands;
     private readonly string _initialWorkingDirectory;
     private string _currentWorkingDirectory;
     private TerminalSession? _session;
 
     public TextViewModel()
     {
-        _commands = LoadCommandsFromJson();
+        _commands = LoadCommandsFromJson().ToList();
 
         var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
@@ -65,6 +65,78 @@ public partial class TextViewModel : ViewModel
         _session = null;
         _currentWorkingDirectory = _initialWorkingDirectory;
         TerminalOutput = string.Empty;
+    }
+
+    public void DeleteCommand(NavigationCard? card)
+    {
+        if (card is null)
+        {
+            return;
+        }
+
+        var title = (card.Name ?? string.Empty).Trim();
+
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            return;
+        }
+
+        var result = System.Windows.MessageBox.Show(
+            $"确定删除命令“{title}”吗？",
+            "确认删除",
+            System.Windows.MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Question
+        );
+
+        if (result != System.Windows.MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        if (NavigationCards is ObservableCollection<NavigationCard> collection)
+        {
+            var existingCard = collection.FirstOrDefault(
+                c => string.Equals(c.Name, title, StringComparison.Ordinal)
+            );
+
+            if (existingCard != null)
+            {
+                collection.Remove(existingCard);
+            }
+        }
+
+        var commandDefinition = _commands.FirstOrDefault(
+            c => string.Equals(c.Title, title, StringComparison.Ordinal)
+        );
+
+        if (commandDefinition != null)
+        {
+            _commands.Remove(commandDefinition);
+        }
+
+        try
+        {
+            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+            if (string.IsNullOrWhiteSpace(localAppData))
+            {
+                return;
+            }
+
+            var directory = Path.Combine(localAppData, "WpfUiGallery");
+            var path = Path.Combine(directory, "commands.json");
+
+            if (!Directory.Exists(directory))
+            {
+                return;
+            }
+
+            JsonSerializerOptions options = new JsonSerializerOptions { WriteIndented = true };
+            File.WriteAllText(path, JsonSerializer.Serialize(_commands, options));
+        }
+        catch
+        {
+        }
     }
 
     partial void OnTerminalOutputChanged(string value)
