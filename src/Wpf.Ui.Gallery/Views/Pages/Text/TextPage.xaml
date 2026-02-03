@@ -82,6 +82,50 @@
             </Grid>
         </ScrollViewer>
 
+        <ui:Card
+            Grid.Row="0"
+            Margin="-40,0,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Width="32"
+            Padding="0">
+            <StackPanel Orientation="Vertical">
+                <ui:Button
+                    Width="32"
+                    Height="32"
+                    Margin="0,0,0,8"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Appearance="Transparent"
+                    Padding="0">
+                    <ui:SymbolIcon Symbol="SelectAllOn24" FontSize="24" />
+                </ui:Button>
+
+                <Border
+                    Height="1"
+                    Margin="0,0,0,8">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#00000000" Offset="0.0" />
+                            <GradientStop Color="#33000000" Offset="0.5" />
+                            <GradientStop Color="#00000000" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+
+                <ui:Button
+                    Width="32"
+                    Height="32"
+                    Margin="0,0,0,0"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Appearance="Transparent"
+                    Padding="0">
+                    <ui:SymbolIcon Symbol="Delete24" FontSize="24" />
+                </ui:Button>
+            </StackPanel>
+        </ui:Card>
+
         <GridSplitter
             Grid.Row="1"
             Height="4"
@@ -96,64 +140,64 @@
             BorderThickness="1"
             BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
             Background="{DynamicResource CardBackgroundFillColorDefaultBrush}">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
 
-                <Grid
-                    x:Name="TerminalHeaderGrid"
-                    Grid.Row="0"
-                    Margin="8,4,8,0"
-                    SizeChanged="TerminalHeaderGrid_OnSizeChanged">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+                    <Grid
+                        x:Name="TerminalHeaderGrid"
+                        Grid.Row="0"
+                        Margin="8,4,8,0"
+                        SizeChanged="TerminalHeaderGrid_OnSizeChanged">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-                    <TextBlock
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        Text="输出" />
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Text="输出" />
 
-                    <StackPanel
-                        Grid.Column="1"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Right">
-                        <ui:Button
-                            x:Name="TerminalToggleButton"
-                            Margin="0,0,8,0"
-                            Icon="{ui:SymbolIcon ChevronUp24}"
-                            Click="ToggleTerminalButton_OnClick" />
-                        <ui:Button
-                            x:Name="TerminalClearButton"
-                            Icon="{ui:SymbolIcon Eraser24}"
-                            Click="TerminalClearButton_OnClick" />
-                    </StackPanel>
+                        <StackPanel
+                            Grid.Column="1"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right">
+                            <ui:Button
+                                x:Name="TerminalToggleButton"
+                                Margin="0,0,8,0"
+                                Icon="{ui:SymbolIcon ChevronUp24}"
+                                Click="ToggleTerminalButton_OnClick" />
+                            <ui:Button
+                                x:Name="TerminalClearButton"
+                                Icon="{ui:SymbolIcon Eraser24}"
+                                Click="TerminalClearButton_OnClick" />
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- 卡片内部的分隔线 -->
+                    <Border
+                        Grid.Row="1"
+                        Margin="0,4,0,0"
+                        BorderThickness="0,1,0,0"
+                        BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" />
+
+                    <RichTextBox
+                        x:Name="TerminalRichTextBox"
+                        Grid.Row="2"
+                        Margin="4,4,4,4"
+                        IsReadOnly="True"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        FontFamily="Cascadia Code SemiBold"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        TextChanged="TerminalRichTextBox_OnTextChanged" />
                 </Grid>
-
-                <!-- 卡片内部的分隔线 -->
-                <Border
-                    Grid.Row="1"
-                    Margin="0,4,0,0"
-                    BorderThickness="0,1,0,0"
-                    BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" />
-
-                <RichTextBox
-                    x:Name="TerminalRichTextBox"
-                    Grid.Row="2"
-                    Margin="4,4,4,4"
-                    IsReadOnly="True"
-                    BorderThickness="0"
-                    Background="Transparent"
-                    ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    FontFamily="Cascadia Code SemiBold"
-                    FontSize="16"
-                    FontWeight="Bold"
-                    TextChanged="TerminalRichTextBox_OnTextChanged" />
-            </Grid>
-        </Border>
+            </Border>
     </Grid>
 </Page>
