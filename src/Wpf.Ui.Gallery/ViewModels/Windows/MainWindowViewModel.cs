@@ -32,7 +32,7 @@ public partial class MainWindowViewModel(IStringLocalizer<Translations> localize
     [ObservableProperty]
     private ObservableCollection<object> _menuItems =
     [
-        new NavigationViewItem("元件管理", SymbolRegular.DrawText24, typeof(TextPage))
+        new NavigationViewItem("元件管理", SymbolRegular.Apps24, typeof(TextPage))
         {
             MenuItemsSource = new object[]
             {
