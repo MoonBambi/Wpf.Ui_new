@@ -31,6 +31,8 @@ public partial class TextPage : INavigableView<TextViewModel>
     private Color _errorBrushDarkColor;
     private Color _systemBrushDarkColor;
 
+    private bool _isAllSelected;
+
     public TextViewModel ViewModel { get; }
 
     public TextPage(TextViewModel viewModel, INavigationService navigationService)
@@ -80,6 +82,32 @@ public partial class TextPage : INavigableView<TextViewModel>
         if (ViewModel.TerminalLines is INotifyCollectionChanged notifyCollection)
         {
             notifyCollection.CollectionChanged += TerminalLines_OnCollectionChanged;
+        }
+    }
+
+    private void SelectAllButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        _isAllSelected = !_isAllSelected;
+
+        SetAllCardCheckboxes(CommandsPresenter, _isAllSelected);
+
+        SelectAllIcon.Filled = _isAllSelected;
+    }
+
+    private static void SetAllCardCheckboxes(DependencyObject parent, bool isChecked)
+    {
+        int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+
+        for (int i = 0; i < childrenCount; i++)
+        {
+            DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+
+            if (child is System.Windows.Controls.CheckBox checkBox)
+            {
+                checkBox.IsChecked = isChecked;
+            }
+
+            SetAllCardCheckboxes(child, isChecked);
         }
     }
 
