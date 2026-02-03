@@ -109,13 +109,15 @@ public partial class CommandEditViewModel : ViewModel, INavigationAware
         }
 
         if (
-            !string.Equals(title, OriginalTitle, StringComparison.OrdinalIgnoreCase)
-            && entries.Any(
-                e => string.Equals(e.Title, title, StringComparison.OrdinalIgnoreCase)
+            entries.Any(
+                e =>
+                    !ReferenceEquals(e, current)
+                    && string.Equals(e.Title, title, StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(e.Terminal, terminal, StringComparison.OrdinalIgnoreCase)
             )
         )
         {
-            _ = MessageBox.Show("标题已存在，不能重复", "提示");
+            _ = MessageBox.Show("该终端类型的标题已存在，不能重复", "提示");
             return;
         }
 
