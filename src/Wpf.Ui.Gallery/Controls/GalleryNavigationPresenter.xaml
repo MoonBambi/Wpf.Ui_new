@@ -40,21 +40,71 @@
                                             <RowDefinition Height="*" />
                                         </Grid.RowDefinitions>
 
-                                        <DockPanel Grid.Row="0" LastChildFill="True">
+                                        <StackPanel
+                                            Grid.Row="0"
+                                            Orientation="Vertical">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <CheckBox
+                                                    Grid.Column="0"
+                                                    HorizontalAlignment="Left"
+                                                    VerticalAlignment="Top"
+                                                    Margin="-2,-6,4,0"
+                                                    Width="18"
+                                                    Height="18"
+                                                    Padding="0"
+                                                    MinWidth="0"
+                                                    Background="#F7F9FC"
+                                                    BorderBrush="{DynamicResource CheckBoxBorderBrush}"
+                                                    BorderThickness="2">
+                                                    <CheckBox.Template>
+                                                        <ControlTemplate TargetType="CheckBox">
+                                                            <Border
+                                                                x:Name="Border"
+                                                                Width="18"
+                                                                Height="18"
+                                                                CornerRadius="9"
+                                                                Background="{TemplateBinding Background}"
+                                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                                BorderThickness="{TemplateBinding BorderThickness}">
+                                                                <Path
+                                                                    x:Name="CheckMark"
+                                                                    Data="M 4 9 L 7 12 L 13 5"
+                                                                    Stroke="{DynamicResource CheckBoxCheckGlyphForeground}"
+                                                                    StrokeThickness="2"
+                                                                    StrokeStartLineCap="Round"
+                                                                    StrokeEndLineCap="Round"
+                                                                    Visibility="Collapsed" />
+                                                            </Border>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsChecked" Value="True">
+                                                                    <Setter TargetName="CheckMark" Property="Visibility" Value="Visible" />
+                                                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource CheckBoxCheckBackgroundFillChecked}" />
+                                                                </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </CheckBox.Template>
+                                                </CheckBox>
+
+                                                <ui:TextBlock
+                                                    Grid.Column="1"
+                                                    FontTypography="BodyStrong"
+                                                    Appearance="Secondary"
+                                                    Text="{Binding Name}"
+                                                    TextWrapping="Wrap" />
+                                            </Grid>
+
                                             <ui:TextBlock
-                                                DockPanel.Dock="Bottom"
                                                 Margin="0,4,0,0"
                                                 FontTypography="Caption"
                                                 Appearance="Tertiary"
                                                 Text="{Binding Description}"
                                                 TextWrapping="Wrap" />
-
-                                            <ui:TextBlock
-                                                FontTypography="BodyStrong"
-                                                Appearance="Secondary"
-                                                Text="{Binding Name}"
-                                                TextWrapping="Wrap" />
-                                        </DockPanel>
+                                        </StackPanel>
 
                                         <Border
                                             Grid.Row="1"
