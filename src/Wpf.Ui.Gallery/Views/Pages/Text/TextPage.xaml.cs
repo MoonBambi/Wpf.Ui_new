@@ -4,8 +4,10 @@
 // All Rights Reserved.
 
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -34,6 +36,9 @@ public partial class TextPage : INavigableView<TextViewModel>
     private Color _systemBrushDarkColor;
 
     private bool _isAllSelected;
+
+    private ICollectionView? _cardsView;
+    private string _searchText = string.Empty;
 
     public TextViewModel ViewModel { get; }
 
@@ -84,6 +89,12 @@ public partial class TextPage : INavigableView<TextViewModel>
         if (ViewModel.TerminalLines is INotifyCollectionChanged notifyCollection)
         {
             notifyCollection.CollectionChanged += TerminalLines_OnCollectionChanged;
+        }
+
+        _cardsView = CollectionViewSource.GetDefaultView(ViewModel.NavigationCards);
+        if (_cardsView != null)
+        {
+            _cardsView.Filter = CardFilter;
         }
     }
 
@@ -164,6 +175,38 @@ public partial class TextPage : INavigableView<TextViewModel>
         bool hasSelection = selectedCards.Count > 0;
         DeleteSelectedButton.IsEnabled = hasSelection;
         DeleteSelectedIcon.Symbol = hasSelection ? SymbolRegular.Delete24 : SymbolRegular.DeleteOff24;
+    }
+
+    private void SearchBox_OnTextChanged(object sender, AutoSuggestBoxTextChangedEventArgs e)
+    {
+        _searchText = e.Text ?? string.Empty;
+        _cardsView?.Refresh();
+    }
+
+    private bool CardFilter(object obj)
+    {
+        if (string.IsNullOrWhiteSpace(_searchText))
+        {
+            return true;
+        }
+
+        if (obj is not NavigationCard card)
+        {
+            return false;
+        }
+
+        string text = _searchText.Trim();
+
+        if (string.IsNullOrEmpty(text))
+        {
+            return true;
+        }
+
+        string name = card.Name ?? string.Empty;
+        string description = card.Description ?? string.Empty;
+
+        return name.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0
+            || description.IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0;
     }
 
     private void HandleLoaded(object sender, RoutedEventArgs e)

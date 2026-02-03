@@ -56,6 +56,7 @@
         <ScrollViewer
             x:Name="ContentScrollViewer"
             Grid.Row="0"
+            Margin="0,40,0,0"
             VerticalScrollBarVisibility="Auto">
             <Grid>
                 <Grid.RowDefinitions>
@@ -67,7 +68,7 @@
                     <StackPanel Margin="10">
                         <TextBlock
                             x:Name="MainTitle"
-                            HorizontalAlignment="Center"
+                            HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             FontSize="28"
                             FontWeight="Black" />
@@ -82,6 +83,16 @@
                     ItemsSource="{Binding ViewModel.NavigationCards, Mode=OneWay}" />
             </Grid>
         </ScrollViewer>
+
+        <ui:AutoSuggestBox
+            x:Name="SearchBox"
+            Grid.Row="0"
+            Margin="80,0,16,16"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Width="360"
+            PlaceholderText="Search..."
+            TextChanged="SearchBox_OnTextChanged" />
 
         <ui:Card
             Grid.Row="0"
@@ -151,64 +162,63 @@
             BorderThickness="1"
             BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
             Background="{DynamicResource CardBackgroundFillColorDefaultBrush}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
-                    <Grid
-                        x:Name="TerminalHeaderGrid"
-                        Grid.Row="0"
-                        Margin="8,4,8,0"
-                        SizeChanged="TerminalHeaderGrid_OnSizeChanged">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
+                <Grid
+                    x:Name="TerminalHeaderGrid"
+                    Grid.Row="0"
+                    Margin="8,4,8,0"
+                    SizeChanged="TerminalHeaderGrid_OnSizeChanged">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                        <TextBlock
-                            Grid.Column="0"
-                            VerticalAlignment="Center"
-                            Text="输出" />
+                    <TextBlock
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Text="输出" />
 
-                        <StackPanel
-                            Grid.Column="1"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Right">
-                            <ui:Button
-                                x:Name="TerminalToggleButton"
-                                Margin="0,0,8,0"
-                                Icon="{ui:SymbolIcon ChevronUp24}"
-                                Click="ToggleTerminalButton_OnClick" />
-                            <ui:Button
-                                x:Name="TerminalClearButton"
-                                Icon="{ui:SymbolIcon Eraser24}"
-                                Click="TerminalClearButton_OnClick" />
-                        </StackPanel>
-                    </Grid>
-
-                    <!-- 卡片内部的分隔线 -->
-                    <Border
-                        Grid.Row="1"
-                        Margin="0,4,0,0"
-                        BorderThickness="0,1,0,0"
-                        BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" />
-
-                    <RichTextBox
-                        x:Name="TerminalRichTextBox"
-                        Grid.Row="2"
-                        Margin="4,4,4,4"
-                        IsReadOnly="True"
-                        BorderThickness="0"
-                        Background="Transparent"
-                        ScrollViewer.VerticalScrollBarVisibility="Auto"
-                        FontFamily="Cascadia Code SemiBold"
-                        FontSize="16"
-                        FontWeight="Bold"
-                        TextChanged="TerminalRichTextBox_OnTextChanged" />
+                    <StackPanel
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+                        <ui:Button
+                            x:Name="TerminalToggleButton"
+                            Margin="0,0,8,0"
+                            Icon="{ui:SymbolIcon ChevronUp24}"
+                            Click="ToggleTerminalButton_OnClick" />
+                        <ui:Button
+                            x:Name="TerminalClearButton"
+                            Icon="{ui:SymbolIcon Eraser24}"
+                            Click="TerminalClearButton_OnClick" />
+                    </StackPanel>
                 </Grid>
-            </Border>
+
+                <Border
+                    Grid.Row="1"
+                    Margin="0,4,0,0"
+                    BorderThickness="0,1,0,0"
+                    BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" />
+
+                <RichTextBox
+                    x:Name="TerminalRichTextBox"
+                    Grid.Row="2"
+                    Margin="4,4,4,4"
+                    IsReadOnly="True"
+                    BorderThickness="0"
+                    Background="Transparent"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    FontFamily="Cascadia Code SemiBold"
+                    FontSize="16"
+                    FontWeight="Bold"
+                    TextChanged="TerminalRichTextBox_OnTextChanged" />
+            </Grid>
+        </Border>
     </Grid>
 </Page>

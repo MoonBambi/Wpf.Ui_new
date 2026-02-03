@@ -32,42 +32,61 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0">
-            <controls:ControlExample
-                Margin="0,0,0,0"
-                HeaderText="标题."
-                XamlCode="&lt;ui:TextBox PlaceholderText=&quot;...&quot; /&gt;" FontFamily="Source Han Sans SC">
-                <controls:ControlExample.ExpanderHeader>
-                    <MultiBinding Converter="{StaticResource CommandOptionHeaderConverter}">
-                        <Binding ElementName="CmdRadio" Path="IsChecked" />
-                        <Binding ElementName="PsRadio" Path="IsChecked" />
-                        <Binding ElementName="BashRadio" Path="IsChecked" />
-                    </MultiBinding>
-                </controls:ControlExample.ExpanderHeader>
-
-                <controls:ControlExample.ExpanderContent>
-                    <StackPanel>
-                        <RadioButton x:Name="CmdRadio" Content="CMD" IsChecked="True" />
-                        <RadioButton x:Name="PsRadio" Content="PS" />
-                        <RadioButton x:Name="BashRadio" Content="Bash" />
-                    </StackPanel>
-                </controls:ControlExample.ExpanderContent>
-
-                <ui:TextBox
-                    x:Name="TitleTextBox"
-                    PlaceholderText="..."
-                    Text="{Binding ViewModel.TitleText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:TextBoxPage}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            </controls:ControlExample>
-
+            <StackPanel Margin="0,0,0,0">
+                <ui:TextBlock
+                    Margin="0,0,0,8"
+                    FontFamily="Source Han Sans SC"
+                    FontSize="16"
+                    FontWeight="Regular"
+                    Foreground="#1F1F1F"
+                    Text="标题" />
                 <controls:ControlExample
-                Margin="0,36,0,0"
-                HeaderText="命令."
-                IsExpanderVisible="False" FontFamily="Source Han Sans SC">
-                <ui:TextBox
-                    x:Name="LiveTextBox"
-                    PlaceholderText="..."
-                    Text="{Binding ViewModel.CommandText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:TextBoxPage}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    Margin="0,0,0,0"
+                    HeaderText="{x:Null}"
+                    XamlCode="&lt;ui:TextBox PlaceholderText=&quot;...&quot; /&gt;"
+                    FontFamily="Source Han Sans SC">
+                    <controls:ControlExample.ExpanderHeader>
+                        <MultiBinding Converter="{StaticResource CommandOptionHeaderConverter}">
+                            <Binding ElementName="CmdRadio" Path="IsChecked" />
+                            <Binding ElementName="PsRadio" Path="IsChecked" />
+                            <Binding ElementName="BashRadio" Path="IsChecked" />
+                        </MultiBinding>
+                    </controls:ControlExample.ExpanderHeader>
 
-            </controls:ControlExample>
+                    <controls:ControlExample.ExpanderContent>
+                        <StackPanel>
+                            <RadioButton x:Name="CmdRadio" Content="CMD" IsChecked="True" />
+                            <RadioButton x:Name="PsRadio" Content="PS" />
+                            <RadioButton x:Name="BashRadio" Content="Bash" />
+                        </StackPanel>
+                    </controls:ControlExample.ExpanderContent>
+
+                    <ui:TextBox
+                        x:Name="TitleTextBox"
+                        PlaceholderText="..."
+                        Text="{Binding ViewModel.TitleText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:TextBoxPage}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </controls:ControlExample>
+            </StackPanel>
+
+            <StackPanel Margin="0,36,0,0">
+                <ui:TextBlock
+                    Margin="0,0,0,8"
+                    FontFamily="Source Han Sans SC"
+                    FontSize="16"
+                    FontWeight="Regular"
+                    Foreground="#1F1F1F"
+                    Text="命令" />
+                <controls:ControlExample
+                    Margin="0,0,0,0"
+                    HeaderText="{x:Null}"
+                    IsExpanderVisible="False"
+                    FontFamily="Source Han Sans SC">
+                    <ui:TextBox
+                        x:Name="LiveTextBox"
+                        PlaceholderText="..."
+                        Text="{Binding ViewModel.CommandText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:TextBoxPage}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </controls:ControlExample>
+            </StackPanel>
              <controls:ControlExample
                 Margin="0,0,0,0"
                 IsExpanderVisible="False">
