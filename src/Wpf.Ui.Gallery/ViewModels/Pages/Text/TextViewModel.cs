@@ -167,6 +167,103 @@ public partial class TextViewModel : ViewModel
         }
     }
 
+    public async void DeleteAllCommands(IEnumerable<NavigationCard> cards)
+    {
+        if (cards is null)
+        {
+            return;
+        }
+
+        if (NavigationCards is not ObservableCollection<NavigationCard> collection || collection.Count == 0)
+        {
+            return;
+        }
+
+        var toDelete = cards.Where(c => c != null).Distinct().ToList();
+
+        if (toDelete.Count == 0)
+        {
+            return;
+        }
+
+        if (_contentDialogService != null)
+        {
+            var result = await _contentDialogService.ShowSimpleDialogAsync(
+                new SimpleContentDialogCreateOptions
+                {
+                    Title = "确认删除选中的命令",
+                    Content = $"确定删除选中的 {toDelete.Count} 个命令吗？此操作不可恢复。",
+                    PrimaryButtonText = "删除",
+                    CloseButtonText = "取消",
+                }
+            );
+
+            if (result != ContentDialogResult.Primary)
+            {
+                return;
+            }
+        }
+        else
+        {
+            var result = System.Windows.MessageBox.Show(
+                $"确定删除选中的 {toDelete.Count} 个命令吗？此操作不可恢复。",
+                "确认删除选中的命令",
+                System.Windows.MessageBoxButton.YesNo,
+                System.Windows.MessageBoxImage.Warning
+            );
+
+            if (result != System.Windows.MessageBoxResult.Yes)
+            {
+                return;
+            }
+        }
+
+        foreach (var card in toDelete)
+        {
+            _ = collection.Remove(card);
+
+            var title = (card.Name ?? string.Empty).Trim();
+
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                continue;
+            }
+
+            var commandDefinition = _commands.FirstOrDefault(
+                c => string.Equals(c.Title, title, StringComparison.Ordinal)
+            );
+
+            if (commandDefinition != null)
+            {
+                _commands.Remove(commandDefinition);
+            }
+        }
+
+        try
+        {
+            var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+            if (string.IsNullOrWhiteSpace(localAppData))
+            {
+                return;
+            }
+
+            var directory = Path.Combine(localAppData, "WpfUiGallery");
+            var path = Path.Combine(directory, "commands.json");
+
+            if (!Directory.Exists(directory))
+            {
+                return;
+            }
+
+            JsonSerializerOptions options = new JsonSerializerOptions { WriteIndented = true };
+            File.WriteAllText(path, JsonSerializer.Serialize(_commands, options));
+        }
+        catch
+        {
+        }
+    }
+
     partial void OnTerminalOutputChanged(string value)
     {
         TerminalLines.Clear();

@@ -78,6 +78,7 @@
                     x:Name="CommandsPresenter"
                     Grid.Row="1"
                     Margin="0, 10"
+                    PreviewMouseLeftButtonUp="CommandsPresenter_OnPreviewMouseLeftButtonUp"
                     ItemsSource="{Binding ViewModel.NavigationCards, Mode=OneWay}" />
             </Grid>
         </ScrollViewer>
@@ -124,8 +125,14 @@
                     Background="Transparent"
                     BorderThickness="0"
                     Appearance="Transparent"
-                    Padding="0">
-                    <ui:SymbolIcon Symbol="Delete24" FontSize="24" />
+                    Padding="0"
+                    x:Name="DeleteSelectedButton"
+                    IsEnabled="False"
+                    Click="DeleteAllButton_OnClick">
+                    <ui:SymbolIcon
+                        x:Name="DeleteSelectedIcon"
+                        Symbol="DeleteOff24"
+                        FontSize="24" />
                 </ui:Button>
             </StackPanel>
         </ui:Card>

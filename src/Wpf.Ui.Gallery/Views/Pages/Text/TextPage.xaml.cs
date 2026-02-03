@@ -7,6 +7,8 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Threading;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using Wpf.Ui.Appearance;
@@ -92,6 +94,25 @@ public partial class TextPage : INavigableView<TextViewModel>
         SetAllCardCheckboxes(CommandsPresenter, _isAllSelected);
 
         SelectAllIcon.Filled = _isAllSelected;
+        UpdateSelectionState();
+    }
+
+    private void DeleteAllButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        var selectedCards = new List<NavigationCard>();
+        CollectSelectedCards(CommandsPresenter, selectedCards);
+
+        if (selectedCards.Count == 0)
+        {
+            return;
+        }
+
+        ViewModel.DeleteAllCommands(selectedCards);
+
+        _isAllSelected = false;
+        SelectAllIcon.Filled = false;
+        SetAllCardCheckboxes(CommandsPresenter, false);
+        UpdateSelectionState();
     }
 
     private static void SetAllCardCheckboxes(DependencyObject parent, bool isChecked)
@@ -109,6 +130,40 @@ public partial class TextPage : INavigableView<TextViewModel>
 
             SetAllCardCheckboxes(child, isChecked);
         }
+    }
+
+    private static void CollectSelectedCards(DependencyObject parent, ICollection<NavigationCard> result)
+    {
+        int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+
+        for (int i = 0; i < childrenCount; i++)
+        {
+            DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+
+            if (child is System.Windows.Controls.CheckBox checkBox && checkBox.IsChecked == true)
+            {
+                if (checkBox.DataContext is NavigationCard card && !result.Contains(card))
+                {
+                    result.Add(card);
+                }
+            }
+
+            CollectSelectedCards(child, result);
+        }
+    }
+
+    private void CommandsPresenter_OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    {
+        Dispatcher.BeginInvoke(new Action(UpdateSelectionState), DispatcherPriority.Background);
+    }
+
+    private void UpdateSelectionState()
+    {
+        var selectedCards = new List<NavigationCard>();
+        CollectSelectedCards(CommandsPresenter, selectedCards);
+        bool hasSelection = selectedCards.Count > 0;
+        DeleteSelectedButton.IsEnabled = hasSelection;
+        DeleteSelectedIcon.Symbol = hasSelection ? SymbolRegular.Delete24 : SymbolRegular.DeleteOff24;
     }
 
     private void HandleLoaded(object sender, RoutedEventArgs e)
