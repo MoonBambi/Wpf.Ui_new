@@ -126,6 +126,11 @@ public partial class TextPage : INavigableView<TextViewModel>
         UpdateSelectionState();
     }
 
+    private void NewCommandButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        _navigationService.Navigate(typeof(TextBoxPage));
+    }
+
     private static void SetAllCardCheckboxes(DependencyObject parent, bool isChecked)
     {
         int childrenCount = VisualTreeHelper.GetChildrenCount(parent);

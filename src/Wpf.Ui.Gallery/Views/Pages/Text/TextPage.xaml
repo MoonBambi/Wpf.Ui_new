@@ -102,6 +102,33 @@
             Width="32"
             Padding="0">
             <StackPanel Orientation="Vertical">
+                <!-- 添加 -->
+                <ui:Button
+                    Width="32"
+                    Height="32"
+                    Margin="0,0,0,8"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Appearance="Transparent"
+                    Padding="0"
+                    Click="NewCommandButton_OnClick">
+                    <ui:SymbolIcon Symbol="AddCircle32" FontSize="24" />
+                </ui:Button>
+
+                <!-- 分隔线：添加 / 全选 -->
+                <Border
+                    Height="1"
+                    Margin="0,0,0,8">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#00000000" Offset="0.0" />
+                            <GradientStop Color="#33000000" Offset="0.5" />
+                            <GradientStop Color="#00000000" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+
+                <!-- 全选 -->
                 <ui:Button
                     Width="32"
                     Height="32"
@@ -117,6 +144,7 @@
                         FontSize="24" />
                 </ui:Button>
 
+                <!-- 分隔线：全选 / 删除 -->
                 <Border
                     Height="1"
                     Margin="0,0,0,8">
@@ -129,6 +157,7 @@
                     </Border.Background>
                 </Border>
 
+                <!-- 删除选中 -->
                 <ui:Button
                     Width="32"
                     Height="32"
